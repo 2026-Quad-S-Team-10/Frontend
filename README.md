@@ -7,3 +7,4 @@
 - [DOCS] 문서 수정
 - [REFACTOR] 코드 정리
 - [CHORE] 기타 설정
+.
