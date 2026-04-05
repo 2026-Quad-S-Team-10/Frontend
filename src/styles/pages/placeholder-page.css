@@ -1,0 +1,42 @@
+.page-placeholder {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.page-placeholder .page-placeholder__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.4;
+  color: #141618;
+}
+
+.page-placeholder__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #72787e;
+}
+
+.page-placeholder__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.page-placeholder__links a {
+  color: #f2a218;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.page-placeholder__links a:hover {
+  text-decoration: underline;
+}
