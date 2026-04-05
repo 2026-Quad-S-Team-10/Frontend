@@ -1,5 +1,9 @@
 import { NewsScreen } from '../features/news/components/NewsScreen.jsx';
 
 export default function NewsPage() {
-  return <NewsScreen />;
+  return (
+    <div className="page-container">
+      <NewsScreen />
+    </div>
+  );
 }

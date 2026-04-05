@@ -4,7 +4,8 @@ import '../styles/pages/placeholder-page.css';
 
 export default function QuizPage() {
   return (
-    <div className="page-placeholder">
+    <div className="page-container">
+      <div className="page-placeholder">
       <h1 className="page-placeholder__title">퀴즈</h1>
       <p className="page-placeholder__text">
         퀴즈 화면입니다. 하단 탭에는 없고 URL로만 진입합니다.
@@ -13,6 +14,7 @@ export default function QuizPage() {
         <Link to={ROUTES.home}>홈</Link>
         <Link to={ROUTES.news}>뉴스</Link>
       </nav>
+      </div>
     </div>
   );
 }
