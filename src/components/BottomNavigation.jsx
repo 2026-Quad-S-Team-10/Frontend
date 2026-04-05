@@ -8,8 +8,8 @@ const BottomNavigation = () => {
   return (
     <nav className="bottom-nav">
       <NavLink 
-        to="/" 
-        className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}
+        to="/home" 
+        className={`nav-item ${location.pathname === '/home' ? 'active' : ''}`}
       >
         <Home size={24} />
         <span>홈</span>
