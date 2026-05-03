@@ -229,3 +229,124 @@
   opacity: 0.6;
   letter-spacing: 0;
 }
+
+.news-page__row-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.news-detail-page {
+  background: var(--news-bg);
+  color: var(--news-text);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 18px 24px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+}
+
+.news-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
+}
+
+.news-detail__back {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(20, 22, 24, 0.06);
+}
+
+.news-detail__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.news-detail__hero {
+  width: 100%;
+  min-height: 220px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #d4d6d9 0%, #9ea2a8 100%);
+}
+
+.news-detail__meta-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.news-detail__badge {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--news-accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.news-detail__category {
+  margin: 0;
+  font-size: 14px;
+  color: var(--news-muted);
+}
+
+.news-detail__article-title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.news-detail__content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.news-detail__lead {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--news-text);
+}
+
+.news-detail__bullet-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--news-text);
+}
+
+.news-detail__bullet-list li {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.news-detail__footer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.news-detail__tag {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(242, 162, 24, 0.12);
+  color: var(--news-accent);
+  font-size: 13px;
+  font-weight: 600;
+}

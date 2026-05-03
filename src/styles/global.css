@@ -140,9 +140,12 @@ body {
 
 /* Bottom Navigation */
 .bottom-nav {
-  position: absolute;
+  position: fixed;
+  left: 50%;
   bottom: 0;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: 400px;
   height: 64px;
   background-color: var(--white);
   border-top: 1px solid #e5e7eb;

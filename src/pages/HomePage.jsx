@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, Settings, CheckCircle2 } from 'lucide-react';
+import { ROUTES } from '../constants/routes.js';
 import './HomePage.css';
 
 const DAYS = ['월', '화', '수', '목', '금', '토', '일'];
@@ -104,6 +106,7 @@ function CalendarBottomSheet({ onClose }) {
 }
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -162,7 +165,11 @@ const HomePage = () => {
 
           <div className="current-word">{currentWord}</div>
 
-          <button type="button" className="btn-start-quiz">
+          <button
+            type="button"
+            className="btn-start-quiz"
+            onClick={() => navigate(ROUTES.quiz)}
+          >
             퀴즈 시작
           </button>
         </div>

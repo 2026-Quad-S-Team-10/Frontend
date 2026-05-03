@@ -15,7 +15,7 @@ export default function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="news" element={<NewsPage />} />
+          <Route path="news/*" element={<NewsPage />} />
           <Route path="mypage" element={<MyPage />} />
           <Route path="mypage/scrap" element={<ScrapPage />} />
           <Route path="mypage/note" element={<IncorrectNotePage />} />
