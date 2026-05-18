@@ -193,6 +193,9 @@
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: flex;
@@ -239,6 +242,7 @@
 .grade-select-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
   padding: 0 10px;
 }
@@ -249,17 +253,34 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  z-index: 1;
 }
 
 .grade-color {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background-color: #E5E7EB;
+  background-color: #D1D5DB;
 }
 
 .grade-color.active {
   background-color: #EAB308;
+}
+
+.grade-color.past {
+  background-color: #FEF3C7;
+}
+
+.grade-line {
+  font-weight: 800;
+  color: #E5E7EB;
+  letter-spacing: 2px;
+  font-size: 14px;
+  margin-bottom: 24px; /* Align with circles */
+}
+
+.grade-line.active {
+  color: #EAB308;
 }
 
 .grade-name {
@@ -292,7 +313,6 @@
 .word-item.active {
   color: #3B82F6;
   font-weight: 800;
-  background-color: #EFF6FF;
 }
 
 /* 캘린더 바텀시트 내부 */
