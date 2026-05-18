@@ -55,7 +55,7 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background-color: #EAB308;
+  background-color: #D1D5DB;
   /* 등급에 따라 변하는 색상용 */
 }
 
@@ -104,7 +104,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: #F8F4DF;
+  background-color: #F9FAFB;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -170,7 +170,10 @@
 }
 
 .streak-day-item.today {
-  color: #3B82F6;
+  background-color: #E5E7EB;
+  color: var(--text-dark, #111827);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .streak-day-icon {
@@ -194,6 +197,9 @@
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: flex;
@@ -240,6 +246,7 @@
 .grade-select-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
   padding: 0 10px;
 }
@@ -250,6 +257,7 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  z-index: 2;
 }
 
 .grade-color {
@@ -261,6 +269,18 @@
 
 .grade-color.active {
   background-color: #EAB308;
+}
+
+.grade-color.past {
+  background-color: #FEF3C7; /* 연한 베이지색 */
+}
+
+.grade-line {
+  color: #E5E7EB;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-top: -24px;
+  z-index: 1;
 }
 
 .grade-name {
@@ -293,7 +313,6 @@
 .word-item.active {
   color: #3B82F6;
   font-weight: 800;
-  background-color: #EFF6FF;
 }
 
 /* 캘린더 바텀시트 내부 */

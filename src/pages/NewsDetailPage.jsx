@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Bookmark } from 'lucide-react';
 import { useNews } from '../features/news/hooks/useNews.js';
 import '../styles/pages/news-page.css';
 
@@ -19,6 +19,42 @@ export default function NewsDetailPage() {
     }
     return data.listArticles[index];
   }, [data, articleId]);
+
+  const [isScraped, setIsScraped] = useState(false);
+
+  useEffect(() => {
+    if (article) {
+      const saved = localStorage.getItem('scrapedNews');
+      if (saved) {
+        const scrapedNews = JSON.parse(saved);
+        const exists = scrapedNews.some(item => String(item.id) === String(articleId));
+        setIsScraped(exists);
+      }
+    }
+  }, [article, articleId]);
+
+  const toggleScrap = () => {
+    if (!article) return;
+    
+    const saved = localStorage.getItem('scrapedNews');
+    let scrapedNews = saved ? JSON.parse(saved) : [];
+    
+    if (isScraped) {
+      scrapedNews = scrapedNews.filter(item => String(item.id) !== String(articleId));
+    } else {
+      scrapedNews.push({
+        id: articleId,
+        category: '국제', // 임의 카테고리
+        tags: ['#키워드', '#키워드2'],
+        title: article.title || '글제목',
+        source: '출처',
+        date: article.meta || '26.02.14'
+      });
+    }
+    
+    localStorage.setItem('scrapedNews', JSON.stringify(scrapedNews));
+    setIsScraped(!isScraped);
+  };
 
   if (loading && !data) {
     return (
@@ -73,40 +109,71 @@ export default function NewsDetailPage() {
           onClick={() => navigate(-1)}
           aria-label="뒤로가기"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={24} />
         </button>
-        <h1 className="news-detail__title">뉴스 상세</h1>
       </header>
 
       <section className="news-detail__hero" aria-hidden="true" />
 
       <section className="news-detail__meta-section">
-        <div className="news-detail__badge">헤드라인</div>
-        <p className="news-detail__category">{article.meta}</p>
-        <h2 className="news-detail__article-title">{article.title}</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span className="news-detail__badge">국제</span>
+            <span className="news-detail__keyword">#키워드</span>
+            <span className="news-detail__keyword">#키워드2</span>
+          </div>
+          <Bookmark 
+            size={24} 
+            color={isScraped ? "#EAB308" : "#72787E"} 
+            fill={isScraped ? "#EAB308" : "none"} 
+            style={{ cursor: 'pointer' }} 
+            onClick={toggleScrap}
+          />
+        </div>
+        <h2 className="news-detail__article-title">{article.title || '글제목'}</h2>
+        <p className="news-detail__category">출처 - {article.meta || '26.02.14'}</p>
+      </section>
+
+      <section className="news-detail__ai-summary">
+        <div className="news-detail__ai-summary-title">
+          <span>✨</span> AI요약
+        </div>
+        <ul className="news-detail__ai-bullet-list">
+          <li>내용</li>
+          <li>내용</li>
+          <li>내용</li>
+        </ul>
       </section>
 
       <section className="news-detail__content">
-        <p className="news-detail__lead">
-          뉴스 목록에서 선택한 기사의 주요 내용을 자세히 확인하세요. 실제 데이터가 없으므로 예시 텍스트로 화면을 구성합니다.
-        </p>
         <p>
-          이번 기사는 최신 뉴스 흐름과 핵심 포인트를 요약해 전달합니다. 클릭한 기사 제목 및 기사 사진을 통해 상세 페이지로 이동할 수 있습니다.
-        </p>
-        <ul className="news-detail__bullet-list">
-          <li>핵심 요약 1: 주요 이슈와 배경</li>
-          <li>핵심 요약 2: 관련 통계 및 시장 영향</li>
-          <li>핵심 요약 3: 다음으로 주목할 변화</li>
-        </ul>
-        <p>
-          기사 전문은 제공된 모의 데이터에 맞춰 기본 텍스트로 표현됩니다. 실제 API가 포함되면 여기에서 상세 본문 내용을 렌더링하도록 확장할 수 있습니다.
+          글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용
         </p>
       </section>
 
-      <section className="news-detail__footer-tags" aria-label="관련 태그">
-        <span className="news-detail__tag">#관련뉴스</span>
-        <span className="news-detail__tag">#경제</span>
-        <span className="news-detail__tag">#핫이슈</span>
+      <div className="news-detail__divider"></div>
+
+      <section className="news-detail__related">
+        <h3 className="news-detail__related-title">
+          <span className="news-detail__keyword">#키워드</span> 관련 뉴스
+        </h3>
+        
+        <div className="news-detail__related-list">
+          <div className="news-page__row">
+            <div className="news-page__thumb news-page__thumb--list"></div>
+            <div className="news-page__row-body">
+              <h4 className="news-page__list-title">기사 제목기사 제목기사 제목기사 제목기사 제목기사 제목</h4>
+              <p className="news-page__meta news-page__meta--muted">출처 - 26.02.14</p>
+            </div>
+          </div>
+          <div className="news-page__row">
+            <div className="news-page__thumb news-page__thumb--list"></div>
+            <div className="news-page__row-body">
+              <h4 className="news-page__list-title">기사 제목기사 제목기사 제목기사 제목기사 제목기사 제목</h4>
+              <p className="news-page__meta news-page__meta--muted">출처 - 26.02.14</p>
+            </div>
+          </div>
+        </div>
       </section>
     </article>
   );

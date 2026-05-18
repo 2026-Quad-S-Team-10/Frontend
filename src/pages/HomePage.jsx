@@ -1,17 +1,10 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Settings, CheckCircle2 } from 'lucide-react';
+import { Bell, Settings, CheckCircle2, ChevronDown } from 'lucide-react';
 import { ROUTES } from '../constants/routes.js';
 import './HomePage.css';
 
 const DAYS = ['월', '화', '수', '목', '금', '토', '일'];
-const DATES = [
-  null, null, 3, 4, 5, 6, 7,
-  8, 9, 10, 11, 12, 13, 14,
-  15, 16, 17, 18, 19, 20, 21,
-  22, 23, 24, 25, 26, 27, 28,
-  29, 30, 31,
-];
 
 function SettingsBottomSheet({
   onClose,
@@ -28,16 +21,26 @@ function SettingsBottomSheet({
         <div className="bottom-sheet-handle"></div>
 
         <div className="grade-select-row">
-          {mockGrades.map((grade) => (
-            <div
-              key={grade}
-              className={`grade-option ${currentGrade === grade ? 'active' : ''}`}
-              onClick={() => onSelectGrade(grade)}
-            >
-              <div className={`grade-color ${currentGrade === grade ? 'active' : ''}`}></div>
-              <span className="grade-name">{grade}</span>
-            </div>
-          ))}
+          {mockGrades.map((grade, index) => {
+            const isPast = mockGrades.indexOf(currentGrade) > index;
+            const isActive = currentGrade === grade;
+            const colorClass = isActive ? 'active' : isPast ? 'past' : '';
+
+            return (
+              <Fragment key={grade}>
+                <div
+                  className={`grade-option ${isActive ? 'active' : ''}`}
+                  onClick={() => onSelectGrade(grade)}
+                >
+                  <div className={`grade-color ${colorClass}`}></div>
+                  <span className="grade-name">{grade}</span>
+                </div>
+                {index < mockGrades.length - 1 && (
+                  <div className="grade-line">|||||</div>
+                )}
+              </Fragment>
+            );
+          })}
         </div>
 
         <div className="word-grid">
@@ -57,14 +60,71 @@ function SettingsBottomSheet({
 }
 
 function CalendarBottomSheet({ onClose }) {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(year, month - 1, 1));
+  };
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(year, month + 1, 1));
+  };
+
+  const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+  const getFirstDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
+
+  const daysInMonth = getDaysInMonth(year, month);
+  let firstDay = getFirstDayOfMonth(year, month);
+  firstDay = firstDay === 0 ? 6 : firstDay - 1; // 0 is Sunday, map to 6. Monday is 0.
+
+  const dates = [];
+  for (let i = 0; i < firstDay; i++) {
+    dates.push(null);
+  }
+  for (let i = 1; i <= daysInMonth; i++) {
+    dates.push(i);
+  }
+
+  // Mock streak array (e.g., learned dates in the current month)
+  const learnedDates = [3, 4, 5, 14, 15]; 
+  const todayDate = new Date().getDate();
+
   return (
     <div className="bottom-sheet-overlay" onClick={onClose}>
       <div className="bottom-sheet-content" onClick={(e) => e.stopPropagation()}>
         <div className="bottom-sheet-handle"></div>
 
         <div className="calendar-header">
-          <span>2025년</span>
-          <span>3월</span>
+          <button onClick={handlePrevMonth} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', padding: '0 10px' }}>&lt;</button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <select
+                value={year}
+                onChange={(e) => setCurrentDate(new Date(parseInt(e.target.value), month, 1))}
+                style={{ appearance: 'none', background: 'transparent', border: 'none', fontSize: '1.1rem', fontWeight: 800, color: '#111827', paddingRight: '20px', cursor: 'pointer', outline: 'none' }}
+              >
+                {Array.from({ length: 5 }, (_, i) => year - 2 + i).map(y => (
+                  <option key={y} value={y}>{y}년</option>
+                ))}
+              </select>
+              <ChevronDown size={18} style={{ position: 'absolute', right: 0, pointerEvents: 'none' }} />
+            </div>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <select
+                value={month}
+                onChange={(e) => setCurrentDate(new Date(year, parseInt(e.target.value), 1))}
+                style={{ appearance: 'none', background: 'transparent', border: 'none', fontSize: '1.1rem', fontWeight: 800, color: '#111827', paddingRight: '20px', cursor: 'pointer', outline: 'none' }}
+              >
+                {Array.from({ length: 12 }, (_, i) => i).map(m => (
+                  <option key={m} value={m}>{m + 1}월</option>
+                ))}
+              </select>
+              <ChevronDown size={18} style={{ position: 'absolute', right: 0, pointerEvents: 'none' }} />
+            </div>
+          </div>
+          <button onClick={handleNextMonth} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', padding: '0 10px' }}>&gt;</button>
         </div>
 
         <div className="calendar-grid">
@@ -74,14 +134,14 @@ function CalendarBottomSheet({ onClose }) {
             </div>
           ))}
 
-          {DATES.map((date, index) => {
-            if (!date) return <div key={index}></div>;
-            const hasStar = date === 1 || date === 2 || date === 10;
-            const isToday = date === 3;
+          {dates.map((date, index) => {
+            if (!date) return <div key={`empty-${index}`}></div>;
+            const hasStar = learnedDates.includes(date);
+            const isToday = date === todayDate && new Date().getMonth() === month && new Date().getFullYear() === year;
 
             return (
               <div
-                key={index}
+                key={date}
                 className={`cal-date ${hasStar ? 'has-star' : ''} ${isToday ? 'today-bg' : ''}`}
               >
                 {hasStar ? '⭐' : date}
@@ -93,11 +153,11 @@ function CalendarBottomSheet({ onClose }) {
         <div className="summary-cards">
           <div className="summary-card">
             <span>현재 연속 학습일</span>
-            <span className="summary-value">0일</span>
+            <span className="summary-value">4일</span>
           </div>
           <div className="summary-card">
             <span>이달 최대 연속 학습일</span>
-            <span className="summary-value">0일</span>
+            <span className="summary-value">5일</span>
           </div>
         </div>
       </div>
@@ -110,7 +170,7 @@ const HomePage = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  const [currentGrade, setCurrentGrade] = useState('등급3');
+  const [currentGrade, setCurrentGrade] = useState('초급');
   const [currentWord, setCurrentWord] = useState('금리');
 
   const mockWords = [
@@ -119,7 +179,7 @@ const HomePage = () => {
     '단어7', '단어8', '단어9',
   ];
 
-  const mockGrades = ['등급1', '등급2', '등급3', '초보졸업'];
+  const mockGrades = ['초급', '중급', '고급', '졸업'];
 
   const handleSelectWord = (word) => {
     setCurrentWord(word);
@@ -130,7 +190,6 @@ const HomePage = () => {
     <div className="homepage-container">
       <header className="home-header">
         <span>퀴즈 홈</span>
-        <Bell size={24} color="#111827" />
       </header>
 
       <div className="home-content">
@@ -160,7 +219,7 @@ const HomePage = () => {
           </div>
 
           <div className="quiz-badge">
-            오늘의 퀴즈 <CheckCircle2 size={16} fill="#3B82F6" color="#FFFFFF" />
+            오늘의 퀴즈 <CheckCircle2 size={16} fill="#D1D5DB" color="#FFFFFF" />
           </div>
 
           <div className="current-word">{currentWord}</div>
