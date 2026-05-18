@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bookmark, Pencil, Check } from 'lucide-react';
 import './MyPage.css';
 
@@ -7,6 +7,14 @@ const MyPage = () => {
   const [userName, setUserName] = useState('유저이름');
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (window.confirm("정말 로그아웃 하시겠습니까?")) {
+      // 로그아웃 로직 (예: 토큰 삭제 등)
+      navigate('/login');
+    }
+  };
 
   const startEditing = () => {
     setTempName(userName);
@@ -147,11 +155,11 @@ const MyPage = () => {
         </div>
 
         <div className="utility-menu">
-          <button type="button" className="utility-btn">
+          <button type="button" className="utility-btn" onClick={handleLogout}>
             로그아웃
           </button>
           <div className="utility-divider"></div>
-          <button type="button" className="utility-btn">
+          <button type="button" className="utility-btn" onClick={() => navigate('/mypage/withdraw')}>
             계정 탈퇴
           </button>
         </div>

@@ -1,0 +1,153 @@
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--white, #FFFFFF);
+  padding: 24px;
+}
+
+.auth-header {
+  margin-top: 40px;
+  margin-bottom: 32px;
+}
+
+.auth-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-dark, #111827);
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  font-size: 15px;
+  color: var(--text-gray, #6B7280);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark, #111827);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.auth-input:focus {
+  border-color: #EAB308;
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
+}
+
+.auth-button {
+  margin-top: 12px;
+  width: 100%;
+  background-color: #EAB308;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.auth-button:active {
+  opacity: 0.8;
+}
+
+.sns-login-section {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.sns-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  color: #9CA3AF;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sns-divider::before,
+.sns-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #E5E7EB;
+}
+
+.sns-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.sns-button {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-weight: bold;
+}
+
+.sns-button.kakao {
+  background-color: #FEE500;
+  color: #000;
+}
+
+.sns-button.google {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  color: #000;
+}
+
+.sns-button.naver {
+  background-color: #03C75A;
+  color: #FFF;
+}
+
+.auth-footer {
+  text-align: center;
+  padding-bottom: 24px;
+  font-size: 14px;
+  color: #6B7280;
+}
+
+.auth-link {
+  color: #EAB308;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 6px;
+}
