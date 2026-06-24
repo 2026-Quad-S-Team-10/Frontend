@@ -13,6 +13,7 @@ import LoginPage from '../pages/LoginPage.jsx';
 import SignupPage from '../pages/SignupPage.jsx';
 import WithdrawPage from '../pages/WithdrawPage.jsx';
 import OAuth2RedirectPage from '../pages/OAuth2RedirectPage.jsx';
+import CharacterPage from '../pages/CharacterPage.jsx';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="mypage/wordbook" element={<VocabularyPage />} />
             <Route path="mypage/withdraw" element={<WithdrawPage />} />
             <Route path="quiz" element={<QuizPage />} />
+            <Route path="character" element={<CharacterPage />} />
             <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
           </Route>
         </Routes>

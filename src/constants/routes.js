@@ -10,4 +10,5 @@ export const ROUTES = {
   myPageWordbook: '/mypage/wordbook',
   withdraw: '/mypage/withdraw',
   quiz: '/quiz',
+  character: '/character',
 };

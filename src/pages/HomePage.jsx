@@ -177,7 +177,7 @@ const HomePage = () => {
         </div>
 
         <div className="main-card">
-          <div className="settings-icon-wrapper" onClick={() => setIsSettingsOpen(true)}>
+          <div className="settings-icon-wrapper" onClick={() => navigate(ROUTES.character)}>
             <Settings size={28} />
           </div>
 
