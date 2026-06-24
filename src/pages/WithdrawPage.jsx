@@ -1,22 +1,35 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { deleteMe } from '../api/user.js';
+import { apiClient } from '../api/client.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './SubPage.css';
 
 const WithdrawPage = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleWithdraw = () => {
-    if (!agreed) {
-      alert("안내 사항 확인 및 동의가 필요합니다.");
-      return;
-    }
-    
-    if (window.confirm("정말 계정을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
-      // 계정 탈퇴 API 호출 등 처리
-      alert("계정이 정상적으로 탈퇴되었습니다.");
+  const handleWithdraw = async () => {
+    if (!agreed) { alert('안내 사항 확인 및 동의가 필요합니다.'); return; }
+    if (!window.confirm('정말 계정을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) { alert('로그인 정보가 없습니다.'); return; }
+
+    setLoading(true);
+    try {
+      await deleteMe(userId);
+      apiClient.clearTokens();
+      setUser(null);
+      alert('계정이 정상적으로 탈퇴되었습니다.');
       navigate('/login');
+    } catch (e) {
+      alert(e.message ?? '탈퇴 처리에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,8 +57,8 @@ const WithdrawPage = () => {
 
         <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
               style={{ marginTop: '4px', width: '20px', height: '20px', accentColor: '#EAB308' }}
@@ -55,24 +68,19 @@ const WithdrawPage = () => {
             </span>
           </label>
 
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={handleWithdraw}
-            disabled={!agreed}
+            disabled={!agreed || loading}
             style={{
-              width: '100%',
-              padding: '16px',
-              borderRadius: '12px',
-              border: 'none',
-              fontSize: '16px',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              backgroundColor: agreed ? '#DC2626' : '#FCA5A5',
-              cursor: agreed ? 'pointer' : 'not-allowed',
+              width: '100%', padding: '16px', borderRadius: '12px', border: 'none',
+              fontSize: '16px', fontWeight: '700', color: '#FFFFFF',
+              backgroundColor: agreed && !loading ? '#DC2626' : '#FCA5A5',
+              cursor: agreed && !loading ? 'pointer' : 'not-allowed',
               transition: 'background-color 0.2s'
             }}
           >
-            계정 탈퇴하기
+            {loading ? '처리 중...' : '계정 탈퇴하기'}
           </button>
         </div>
       </div>

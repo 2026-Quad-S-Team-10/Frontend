@@ -1,6 +1,7 @@
 export const ROUTES = {
   login: '/login',
   signup: '/signup',
+  oauth2Redirect: '/oauth2/redirect',
   home: '/',
   news: '/news',
   myPage: '/mypage',

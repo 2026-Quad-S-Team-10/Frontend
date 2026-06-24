@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ROUTES } from '../constants/routes.js';
+import { AuthProvider } from '../context/AuthContext.jsx';
 import { MainLayout } from '../components/layout/MainLayout.jsx';
 import HomePage from '../pages/HomePage.jsx';
 import NewsPage from '../pages/NewsPage.jsx';
@@ -11,25 +12,29 @@ import VocabularyPage from '../pages/VocabularyPage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
 import SignupPage from '../pages/SignupPage.jsx';
 import WithdrawPage from '../pages/WithdrawPage.jsx';
+import OAuth2RedirectPage from '../pages/OAuth2RedirectPage.jsx';
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="login" element={<LoginPage />} />
-        <Route path="signup" element={<SignupPage />} />
-        <Route element={<MainLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="news/*" element={<NewsPage />} />
-          <Route path="mypage" element={<MyPage />} />
-          <Route path="mypage/scrap" element={<ScrapPage />} />
-          <Route path="mypage/note" element={<IncorrectNotePage />} />
-          <Route path="mypage/wordbook" element={<VocabularyPage />} />
-          <Route path="mypage/withdraw" element={<WithdrawPage />} />
-          <Route path="quiz" element={<QuizPage />} />
-          <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="oauth2/redirect" element={<OAuth2RedirectPage />} />
+          <Route element={<MainLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="news/*" element={<NewsPage />} />
+            <Route path="mypage" element={<MyPage />} />
+            <Route path="mypage/scrap" element={<ScrapPage />} />
+            <Route path="mypage/note" element={<IncorrectNotePage />} />
+            <Route path="mypage/wordbook" element={<VocabularyPage />} />
+            <Route path="mypage/withdraw" element={<WithdrawPage />} />
+            <Route path="quiz" element={<QuizPage />} />
+            <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
