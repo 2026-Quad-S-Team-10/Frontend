@@ -148,19 +148,19 @@ function resolveExpressionKey(value) {
     return 'normal';
   }
 
-  if (lower.includes('embarrassed') || lower.includes('panic') || key.includes('당황')) {
+  if (lower.includes('embarrassed') || lower.includes('panic') || key.includes('당황') || key.includes('열정')) {
     return 'embarrassed';
   }
 
-  if (lower.includes('excited') || lower.includes('happy') || key.includes('신남')) {
+  if (lower.includes('excited') || lower.includes('happy') || key.includes('신남') || key.includes('설렘')) {
     return 'excited';
   }
 
-  if (lower.includes('smirk') || key.includes('썩소')) {
+  if (lower.includes('smirk') || key.includes('썩소') || key.includes('미소')) {
     return 'smirk';
   }
 
-  if (lower.includes('teary') || lower.includes('sad') || key.includes('울먹')) {
+  if (lower.includes('teary') || lower.includes('sad') || key.includes('울먹') || key.includes('먹먹')) {
     return 'teary';
   }
 
@@ -168,7 +168,7 @@ function resolveExpressionKey(value) {
     return 'sleepy';
   }
 
-  if (lower.includes('angry') || key.includes('화난')) {
+  if (lower.includes('angry') || key.includes('화난') || key === '화') {
     return 'angry';
   }
 
@@ -186,9 +186,9 @@ function resolveOutfitKey(value) {
   if (lower.includes('guitar') || key.includes('기타')) return 'guitarist';
   if (lower.includes('rain') || key.includes('비옷')) return 'raincoat';
   if (lower.includes('santa') || key.includes('산타')) return 'santa';
-  if (lower.includes('study') || lower.includes('facemode') || key.includes('열공')) return 'faceMode';
+  if (lower.includes('study') || lower.includes('facemode') || key.includes('열공') || key.includes('공부')) return 'faceMode';
   if (lower.includes('king') || key.includes('왕')) return 'king';
-  if (lower.includes('baker') || key.includes('제빵')) return 'baker';
+  if (lower.includes('baker') || key.includes('제빵') || key === '빵' || key.includes('빵집')) return 'baker';
 
   return key;
 }
@@ -360,7 +360,7 @@ const CharacterPage = () => {
   const [activeTab, setActiveTab] = useState('expression');
 
   const [selectedExpression, setSelectedExpression] = useState('normal');
-  const [selectedOutfit, setSelectedOutfit] = useState('guitarist');
+  const [selectedOutfit, setSelectedOutfit] = useState(null);
   const [selectedBackground, setSelectedBackground] = useState('default');
 
   const [customizationData, setCustomizationData] = useState(null);
@@ -409,7 +409,7 @@ const CharacterPage = () => {
               data?.equippedOutfitAssetKey ??
                 data?.selectedOutfit ??
                 data?.outfitAssetKey ??
-                'guitarist',
+                null,
             ),
           );
 
