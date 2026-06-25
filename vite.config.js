@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 3000,
     proxy: {
       // /api, /oauth2 요청을 백엔드로 프록시 (CORS 우회)
       '/api': {
