@@ -8,24 +8,46 @@ import '../styles/pages/auth.css';
 export default function SignupPage() {
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
+
   const [nickname, setNickname] = useState('');
-  const [goal, setGoal] = useState('');
+  const [motto, setMotto] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      alert('로그인 후 회원가입을 진행해주세요.');
+      navigate(ROUTES.login, { replace: true });
+      return;
+    }
+
     if (!nickname.trim()) {
       setError('닉네임을 입력해주세요.');
       return;
     }
+
     setLoading(true);
     setError('');
+
     try {
-      await createAccount({ nickname: nickname.trim(), goal: goal.trim() });
-      await refreshUser();
+      await createAccount({
+        nickname: nickname.trim(),
+        motto: motto.trim(),
+      });
+
+      localStorage.setItem('isNewUser', 'false');
+
+      if (refreshUser) {
+        await refreshUser();
+      }
+
       navigate(ROUTES.home, { replace: true });
     } catch (err) {
+      console.error(err);
       setError(err.message ?? '회원가입에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setLoading(false);
@@ -36,7 +58,9 @@ export default function SignupPage() {
     <div className="auth-page app-container">
       <div className="auth-header">
         <h1 className="auth-title">환영합니다!</h1>
-        <p className="auth-subtitle">닉네임과 학습 목표를 설정하면 바로 시작할 수 있어요.</p>
+        <p className="auth-subtitle">
+          닉네임과 한 줄 다짐을 설정하면 바로 시작할 수 있어요.
+        </p>
       </div>
 
       <form className="auth-form" onSubmit={handleSignup}>
@@ -54,19 +78,27 @@ export default function SignupPage() {
         </div>
 
         <div className="input-group">
-          <label className="input-label">한줄 다짐 (선택)</label>
+          <label className="input-label">한 줄 다짐</label>
           <input
             type="text"
             className="auth-input"
             placeholder="예: 매일 경제 공부하기!"
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
+            value={motto}
+            onChange={(e) => setMotto(e.target.value)}
             maxLength={50}
           />
         </div>
 
         {error && (
-          <p style={{ color: '#ff4d6d', fontSize: '13px', marginTop: '4px' }}>{error}</p>
+          <p
+            style={{
+              color: '#ff4d6d',
+              fontSize: '13px',
+              marginTop: '4px',
+            }}
+          >
+            {error}
+          </p>
         )}
 
         <button type="submit" className="auth-button" disabled={loading}>

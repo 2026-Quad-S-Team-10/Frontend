@@ -19,8 +19,10 @@ export default function LoginPage() {
 
       <div className="sns-login-section">
         <div className="sns-divider">SNS 간편 로그인</div>
+
         <div className="sns-buttons">
           <button
+            type="button"
             className="sns-button google"
             aria-label="구글 로그인"
             onClick={handleGoogleLogin}
