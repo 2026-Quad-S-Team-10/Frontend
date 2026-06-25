@@ -13,24 +13,31 @@ export function getTodayQuiz() {
  * PATCH /api/quizzes/today/progress
  */
 export function updateQuizProgress(body) {
-  // body: { quizSetId, step, action: "COMPLETE" }
   return apiClient.patch('/api/quizzes/today/progress', body);
 }
 
 /**
- * 학습용 뉴스 조회 (step 2)
+ * 학습용 뉴스 조회
  * GET /api/quizzes/today/learning-news?quizSetId={quizSetId}
  */
 export function getLearningNews(quizSetId) {
-  return apiClient.get(`/api/quizzes/today/learning-news?quizSetId=${quizSetId}`);
+  const params = new URLSearchParams({
+    quizSetId: String(quizSetId),
+  });
+
+  return apiClient.get(`/api/quizzes/today/learning-news?${params.toString()}`);
 }
 
 /**
- * O/X 퀴즈 문제 조회 (step 3)
+ * O/X 퀴즈 문제 조회
  * GET /api/quizzes/today/question?quizSetId={quizSetId}
  */
 export function getQuizQuestion(quizSetId) {
-  return apiClient.get(`/api/quizzes/today/question?quizSetId=${quizSetId}`);
+  const params = new URLSearchParams({
+    quizSetId: String(quizSetId),
+  });
+
+  return apiClient.get(`/api/quizzes/today/question?${params.toString()}`);
 }
 
 /**
@@ -38,7 +45,6 @@ export function getQuizQuestion(quizSetId) {
  * POST /api/quizzes/today/question/submit
  */
 export function submitQuizAnswer(body) {
-  // body: { quizSetId, questionId, selectedChoiceId }
   return apiClient.post('/api/quizzes/today/question/submit', body);
 }
 
@@ -47,9 +53,12 @@ export function submitQuizAnswer(body) {
  * GET /api/quizzes/today/result?quizSetId={quizSetId}&questionId={questionId}
  */
 export function getQuizResult(quizSetId, questionId) {
-  return apiClient.get(
-    `/api/quizzes/today/result?quizSetId=${quizSetId}&questionId=${questionId}`
-  );
+  const params = new URLSearchParams({
+    quizSetId: String(quizSetId),
+    questionId: String(questionId),
+  });
+
+  return apiClient.get(`/api/quizzes/today/result?${params.toString()}`);
 }
 
 /**
@@ -57,6 +66,5 @@ export function getQuizResult(quizSetId, questionId) {
  * POST /api/quizzes/today/finish
  */
 export function finishQuiz(body) {
-  // body: { quizSetId }
   return apiClient.post('/api/quizzes/today/finish', body);
 }

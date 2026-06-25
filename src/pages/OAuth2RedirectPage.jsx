@@ -5,12 +5,15 @@ import { ROUTES } from '../constants/routes.js';
 
 /**
  * 구글 OAuth2 로그인 콜백 페이지
- * 백엔드가 리다이렉트: /oauth2/redirect?accessToken=...&refreshToken=...&isNewUser=true
+ *
+ * 백엔드 리다이렉트 예시:
+ * /oauth2/redirect?accessToken=...&refreshToken=...&isNewUser=true
  */
 export default function OAuth2RedirectPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { loginWithTokens } = useAuth();
+
   const processed = useRef(false);
 
   useEffect(() => {
@@ -23,17 +26,36 @@ export default function OAuth2RedirectPage() {
     const userId = searchParams.get('userId');
 
     if (!accessToken) {
+      alert('로그인에 실패했습니다. 다시 시도해주세요.');
       navigate(ROUTES.login, { replace: true });
       return;
     }
 
-    loginWithTokens({ accessToken, refreshToken, userId, isNewUser });
+    localStorage.setItem('accessToken', accessToken);
+
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+
+    if (userId) {
+      localStorage.setItem('userId', userId);
+    }
+
+    localStorage.setItem('isNewUser', String(isNewUser));
+
+    loginWithTokens({
+      accessToken,
+      refreshToken,
+      userId,
+      isNewUser,
+    });
 
     if (isNewUser) {
       navigate(ROUTES.signup, { replace: true });
-    } else {
-      navigate(ROUTES.home, { replace: true });
+      return;
     }
+
+    navigate(ROUTES.home, { replace: true });
   }, [searchParams, navigate, loginWithTokens]);
 
   return (

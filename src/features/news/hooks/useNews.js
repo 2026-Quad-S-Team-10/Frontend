@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchNewsFeed } from '../api/newsApi.js';
 
-export function useNews() {
+export function useNews(categoryId) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -9,20 +9,31 @@ export function useNews() {
 
   useEffect(() => {
     let cancelled = false;
-    fetchNewsFeed()
+
+    setLoading(true);
+    setError(null);
+
+    fetchNewsFeed(categoryId)
       .then((feed) => {
-        if (!cancelled) setData(feed);
+        if (!cancelled) {
+          setData(feed);
+        }
       })
       .catch((e) => {
-        if (!cancelled) setError(e instanceof Error ? e : new Error(String(e)));
+        if (!cancelled) {
+          setError(e instanceof Error ? e : new Error(String(e)));
+        }
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       });
+
     return () => {
       cancelled = true;
     };
-  }, [tick]);
+  }, [categoryId, tick]);
 
   const refetch = () => {
     setError(null);

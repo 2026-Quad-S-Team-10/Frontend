@@ -2,7 +2,7 @@
  * 공통 HTTP 클라이언트
  * - VITE_API_BASE_URL 환경 변수로 베이스 URL 설정
  * - JWT accessToken 자동 첨부
- * - 401 응답 시 refreshToken으로 재발급 후 재시도
+ * - 백엔드 ApiResponse<T> 응답에서 data 자동 반환
  */
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
@@ -15,96 +15,110 @@ function getAccessToken() {
   return localStorage.getItem('accessToken');
 }
 
-function getRefreshToken() {
-  return localStorage.getItem('refreshToken');
-}
-
 function setTokens(accessToken, refreshToken) {
-  localStorage.setItem('accessToken', accessToken);
-  if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+  if (accessToken) {
+    localStorage.setItem('accessToken', accessToken);
+  }
+
+  if (refreshToken) {
+    localStorage.setItem('refreshToken', refreshToken);
+  }
 }
 
 function clearTokens() {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('userId');
+  localStorage.removeItem('isNewUser');
 }
 
-async function refreshAccessToken() {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) throw new Error('No refresh token');
-
-  const res = await fetch(buildUrl('/api/auth/refresh'), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken }),
-  });
-
-  if (!res.ok) {
-    clearTokens();
-    window.location.href = '/login';
-    throw new Error('Token refresh failed');
+async function parseResponse(res) {
+  if (res.status === 204) {
+    return null;
   }
 
-  const data = await res.json();
-  setTokens(data.accessToken, data.refreshToken);
-  return data.accessToken;
+  const body = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    const message =
+      body?.error?.message ??
+      body?.message ??
+      body?.error ??
+      `${res.status}`;
+
+    throw new Error(message);
+  }
+
+  if (body?.status === 'ERROR') {
+    const message =
+      body?.error?.message ??
+      body?.error?.code ??
+      '요청에 실패했습니다.';
+
+    throw new Error(message);
+  }
+
+  // 백엔드 공통 응답: { status: "SUCCESS", data: ..., error: null }
+  if (body && Object.prototype.hasOwnProperty.call(body, 'data')) {
+    return body.data;
+  }
+
+  return body;
 }
 
 async function request(path, init = {}) {
-  const url = buildUrl(path);
   const token = getAccessToken();
 
   const headers = {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
+    ...(init.body ? { 'Content-Type': 'application/json' } : {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...init.headers,
   };
 
-  let res = await fetch(url, { ...init, headers });
+  const res = await fetch(buildUrl(path), {
+    ...init,
+    headers,
+  });
 
-  // 401이면 토큰 재발급 후 재시도
   if (res.status === 401) {
-    try {
-      const newToken = await refreshAccessToken();
-      headers.Authorization = `Bearer ${newToken}`;
-      res = await fetch(url, { ...init, headers });
-    } catch {
-      throw new Error('Unauthorized');
-    }
+    clearTokens();
+    window.location.href = '/login';
+    throw new Error('로그인이 필요합니다.');
   }
 
-  if (!res.ok) {
-    let errorMsg = `${res.status}`;
-    try {
-      const errData = await res.json();
-      errorMsg = errData.message ?? errData.error ?? errorMsg;
-    } catch {
-      errorMsg = await res.text().catch(() => errorMsg);
-    }
-    throw new Error(errorMsg);
-  }
-
-  // 204 No Content
-  if (res.status === 204) return null;
-
-  return res.json();
+  return parseResponse(res);
 }
 
 export const apiClient = {
   get: (path, init = {}) => request(path, { ...init, method: 'GET' }),
+
   post: (path, body, init = {}) =>
-    request(path, { ...init, method: 'POST', body: JSON.stringify(body) }),
+    request(path, {
+      ...init,
+      method: 'POST',
+      body: JSON.stringify(body ?? {}),
+    }),
+
   patch: (path, body, init = {}) =>
-    request(path, { ...init, method: 'PATCH', body: JSON.stringify(body) }),
-  delete: (path, init = {}) => request(path, { ...init, method: 'DELETE' }),
+    request(path, {
+      ...init,
+      method: 'PATCH',
+      body: JSON.stringify(body ?? {}),
+    }),
+
+  delete: (path, init = {}) =>
+    request(path, {
+      ...init,
+      method: 'DELETE',
+    }),
+
   setTokens,
   clearTokens,
   getAccessToken,
 };
 
-// 하위 호환성 유지 (기존 apiGet 사용 코드)
+// 하위 호환성 유지
 export async function apiGet(path, init = {}) {
   return apiClient.get(path, init);
 }
