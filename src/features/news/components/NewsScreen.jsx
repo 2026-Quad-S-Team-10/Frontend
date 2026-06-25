@@ -9,10 +9,11 @@ import { NewsLearningSection } from './NewsLearningSection.jsx';
 import '../../../styles/pages/news-page.css';
 
 export function NewsScreen() {
-  const { data, loading, error } = useNews();
   const [categoryId, setCategoryId] = useState(
     () => NEWS_CATEGORY_TABS[0]?.id ?? 'domestic',
   );
+
+  const { data, loading, error } = useNews(categoryId);
 
   const feed = useMemo(() => data, [data]);
 
@@ -32,7 +33,7 @@ export function NewsScreen() {
         <NewsHeader />
         <NewsCategoryTabs activeId={categoryId} onChange={setCategoryId} />
         <p className="news-page__state-msg" role="alert">
-          {error.message}
+          {error.message ?? '뉴스를 불러오지 못했습니다.'}
         </p>
       </div>
     );
@@ -46,11 +47,19 @@ export function NewsScreen() {
     <div className="news-page" data-name="뉴스">
       <NewsHeader />
       <NewsCategoryTabs activeId={categoryId} onChange={setCategoryId} />
+
       <main className="news-page__main">
         <NewsLearningSection
           keyword={feed.keyword}
           articles={feed.learningArticles}
         />
+
+        {loading && (
+          <p className="news-page__state-msg" role="status">
+            뉴스 갱신 중…
+          </p>
+        )}
+
         <NewsArticleList articles={feed.listArticles} />
       </main>
     </div>

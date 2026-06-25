@@ -2,10 +2,16 @@ import { apiClient } from './client.js';
 
 /**
  * 뉴스 목록 조회
- * GET /api/news
+ * GET /api/news?category=DOMESTIC&page=0&size=20
  */
-export function getNewsList() {
-  return apiClient.get('/api/news');
+export function getNewsList({ category = 'DOMESTIC', page = 0, size = 20 } = {}) {
+  const params = new URLSearchParams();
+
+  if (category) params.set('category', category);
+  params.set('page', String(page));
+  params.set('size', String(size));
+
+  return apiClient.get(`/api/news?${params.toString()}`);
 }
 
 /**
@@ -20,8 +26,13 @@ export function getNewsDetail(newsId) {
  * 오늘 배운 키워드 기반 뉴스 조회
  * GET /api/news/learned-keyword
  */
-export function getLearnedKeywordNews() {
-  return apiClient.get('/api/news/learned-keyword');
+export function getLearnedKeywordNews({ page = 0, size = 10 } = {}) {
+  const params = new URLSearchParams();
+
+  params.set('page', String(page));
+  params.set('size', String(size));
+
+  return apiClient.get(`/api/news/learned-keyword?${params.toString()}`);
 }
 
 /**
