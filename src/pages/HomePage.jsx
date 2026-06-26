@@ -320,11 +320,11 @@ const HomePage = () => {
             <Settings size={28} />
           </div>
 
-          <div className="character-display">
+          <div className="home-character-display">
             <img
               src={characterImageUrl || '/image-0.png'}
               alt="캐릭터"
-              className="character-img"
+              className="home-character-img"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = '/image-0.png';
@@ -332,7 +332,7 @@ const HomePage = () => {
             />
           </div>
 
-          <div className="quiz-badge">
+          <div className="home-quiz-badge">
             오늘의 퀴즈 <CheckCircle2 size={16} fill="#D1D5DB" color="#FFFFFF" />
           </div>
 

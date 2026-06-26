@@ -61,7 +61,7 @@ const IncorrectNotePage = () => {
 
             return (
               <div key={id} className="card quiz-card">
-                <span className="quiz-badge">오늘의 퀴즈</span>
+                <span className="note-quiz-badge">오늘의 퀴즈</span>
 
                 {!isRevealed ? (
                   <div
