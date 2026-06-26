@@ -65,7 +65,7 @@
 .news-image {
   width: 90px;
   height: 90px;
-  background-color: #D1D5DB;
+  background: linear-gradient(135deg, #fef6e0 0%, #f9d98e 55%, #f2a218 100%);
   border-radius: 4px;
   flex-shrink: 0;
 }
