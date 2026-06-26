@@ -148,7 +148,7 @@ function resolveExpressionKey(value) {
     return 'normal';
   }
 
-  if (lower.includes('embarrassed') || lower.includes('panic') || key.includes('당황') || key.includes('열정')) {
+  if (lower.includes('embarrassed') || lower.includes('panic') || key.includes('당황') || key.includes('열정') || key.includes('정열')) {
     return 'embarrassed';
   }
 
@@ -187,7 +187,7 @@ function resolveOutfitKey(value) {
   if (lower.includes('rain') || key.includes('비옷')) return 'raincoat';
   if (lower.includes('santa') || key.includes('산타')) return 'santa';
   if (lower.includes('study') || lower.includes('facemode') || key.includes('열공') || key.includes('공부')) return 'faceMode';
-  if (lower.includes('king') || key.includes('왕')) return 'king';
+  if (lower.includes('king') || key.includes('왕') || key.includes('킹')) return 'king';
   if (lower.includes('baker') || key.includes('제빵') || key === '빵' || key.includes('빵집')) return 'baker';
 
   return key;
