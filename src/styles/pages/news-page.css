@@ -4,7 +4,7 @@
   --news-muted: #72787e;
   --news-accent: #f2a218;
   --news-cream: #fcf6e9;
-  --news-placeholder: #d9d9d9;
+  --news-placeholder: linear-gradient(135deg, #fef6e0 0%, #f9d98e 55%, #f2a218 100%);
   --news-tab-inactive-bg: #abb0b8;
   --news-tab-inactive-text: #f6f9ff;
 
@@ -276,7 +276,17 @@
   width: 100%;
   min-height: 220px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #d4d6d9 0%, #9ea2a8 100%);
+  background: linear-gradient(155deg, #0f1b35 0%, #1e3a5f 40%, #2d6a9f 70%, #f2a218 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.news-detail__hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 30%, rgba(242,162,24,0.25) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .news-detail__meta-section {
@@ -312,6 +322,7 @@
   font-size: 22px;
   line-height: 1.3;
   font-weight: 800;
+  color: #141618;
 }
 
 .news-detail__ai-summary {

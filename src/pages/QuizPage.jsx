@@ -79,7 +79,12 @@ function getQuizSetId(quizSet) {
 }
 
 function getConcept(quizSet) {
-  return quizSet?.concept ?? {};
+  // API 응답: quizSet.steps[0].concept 안에 keyword/description/tipTitle/tipContent 존재
+  return (
+    quizSet?.concept ??
+    quizSet?.steps?.find((s) => s.type === 'CONCEPT')?.concept ??
+    {}
+  );
 }
 
 function getQuestionId(questionData) {
@@ -305,7 +310,11 @@ export default function QuizPage() {
     [questionData],
   );
 
-  const isCorrect = resultData?.isCorrect ?? submitResult?.isCorrect ?? false;
+  // Java primitive boolean 'isCorrect' → JSON에서 "correct"로 직렬화됨
+  const isCorrect =
+    resultData?.isCorrect ?? resultData?.correct ??
+    submitResult?.isCorrect ?? submitResult?.correct ??
+    false;
 
   const getChoiceClass = (choiceId) => {
     if (!resultData) return '';
@@ -366,7 +375,7 @@ export default function QuizPage() {
           <p className="quiz-card__section-label">경제 개념</p>
 
           <h2 className="quiz-card__title">
-            {concept.title ?? quizSet?.word ?? quizSet?.keyword ?? '오늘의 단어'}
+            {concept.keyword ?? concept.title ?? quizSet?.word ?? quizSet?.keyword ?? '오늘의 단어'}
           </h2>
 
           <p className="quiz-card__description">
@@ -385,7 +394,7 @@ export default function QuizPage() {
 
           <div className="quiz-card__tips">
             <strong>Tips</strong>
-            <span>{quizSet?.conceptTip ?? '끝까지 읽으면 다음 단계로 넘어갈 수 있어요'}</span>
+            <span>끝까지 읽으면 다음 단계로 넘어갈 수 있어요</span>
           </div>
         </section>
       </div>
