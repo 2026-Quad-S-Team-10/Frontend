@@ -115,7 +115,7 @@ const MyPage = () => {
             <img
               src="/image-0.png"
               alt="캐릭터"
-              className="character-img"
+              className="mypage-character-img"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://via.placeholder.com/90?text=Face';

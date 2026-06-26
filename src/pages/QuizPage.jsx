@@ -79,7 +79,6 @@ function getQuizSetId(quizSet) {
 }
 
 function getConcept(quizSet) {
-  // API 응답: quizSet.steps[0].concept 안에 keyword/description/tipTitle/tipContent 존재
   return (
     quizSet?.concept ??
     quizSet?.steps?.find((s) => s.type === 'CONCEPT')?.concept ??
@@ -89,6 +88,14 @@ function getConcept(quizSet) {
 
 function getQuestionId(questionData) {
   return questionData?.questionId ?? questionData?.id;
+}
+
+function isSameChoiceId(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return false;
+  }
+
+  return String(a) === String(b);
 }
 
 function normalizeChoices(questionData) {
@@ -310,31 +317,47 @@ export default function QuizPage() {
     [questionData],
   );
 
-  // Java primitive boolean 'isCorrect' → JSON에서 "correct"로 직렬화됨
   const isCorrect =
-    resultData?.isCorrect ?? resultData?.correct ??
-    submitResult?.isCorrect ?? submitResult?.correct ??
+    resultData?.isCorrect ??
+    resultData?.correct ??
+    submitResult?.isCorrect ??
+    submitResult?.correct ??
     false;
 
   const getChoiceClass = (choiceId) => {
-    if (!resultData) return '';
+    if (!resultData && !submitResult) return '';
+
+    const isSelected = isSameChoiceId(selectedChoiceId, choiceId);
 
     const resultChoices = resultData?.choices ?? resultData?.options ?? [];
-    const choice = resultChoices.find(
-      (item) => (item.choiceId ?? item.id) === choiceId,
+    const choice = resultChoices.find((item) =>
+      isSameChoiceId(item.choiceId ?? item.id, choiceId),
     );
 
-    if (!choice) return '';
+    const choiceState = String(choice?.state ?? '').toUpperCase();
 
-    if (choice.state === 'CORRECT' || choice.isCorrect) {
+    if (
+      choiceState === 'CORRECT' ||
+      choice?.isCorrect === true ||
+      choice?.correct === true
+    ) {
       return 'quiz-answer-button--correct';
     }
 
     if (
-      choice.state === 'WRONG' ||
-      choice.state === 'INCORRECT' ||
-      choice.isSelected
+      choiceState === 'WRONG' ||
+      choiceState === 'INCORRECT' ||
+      choice?.isSelected === true ||
+      choice?.selected === true
     ) {
+      return 'quiz-answer-button--wrong';
+    }
+
+    if (isSelected && isCorrect) {
+      return 'quiz-answer-button--correct';
+    }
+
+    if (isSelected && !isCorrect) {
       return 'quiz-answer-button--wrong';
     }
 
@@ -366,13 +389,12 @@ export default function QuizPage() {
 
   const renderStep1 = () => (
     <>
-      <div className="quiz-card-stack" aria-label="퀴즈 카드 스택">
+      <div className="quiz-card-stack quiz-card-stack--step-1" aria-label="퀴즈 카드 스택">
         <div className="quiz-card-stack__back-layer" />
         <div className="quiz-card-stack__front-layer" />
 
         <section className="quiz-card quiz-card--main">
           <div className="quiz-card__badge">1</div>
-          <p className="quiz-card__section-label">경제 개념</p>
 
           <h2 className="quiz-card__title">
             {concept.keyword ?? concept.title ?? quizSet?.word ?? quizSet?.keyword ?? '오늘의 단어'}
@@ -391,23 +413,10 @@ export default function QuizPage() {
               <span>{concept.examples.join(' / ')}</span>
             </div>
           )}
-
-          <div className="quiz-card__tips">
-            <strong>Tips</strong>
-            <span>끝까지 읽으면 다음 단계로 넘어갈 수 있어요</span>
-          </div>
         </section>
       </div>
 
       <div className="quiz-footer">
-        <div className="quiz-dots">
-          <span className="quiz-dot quiz-dot--active" />
-          <span className="quiz-dot" />
-          <span className="quiz-dot" />
-        </div>
-
-        <p className="quiz-footer__text">끝까지 읽으면 다음 단계로 넘어갈 수 있어요</p>
-
         <button
           type="button"
           className="quiz-next-button"
@@ -422,13 +431,12 @@ export default function QuizPage() {
 
   const renderStep2 = () => (
     <>
-      <div className="quiz-card-stack" aria-label="퀴즈 카드 스택">
+      <div className="quiz-card-stack quiz-card-stack--step-2" aria-label="퀴즈 카드 스택">
         <div className="quiz-card-stack__back-layer" />
         <div className="quiz-card-stack__front-layer" />
 
         <section className="quiz-card quiz-card--main">
           <div className="quiz-card__badge">2</div>
-          <p className="quiz-card__section-label">뉴스로 보는 경제</p>
 
           {newsLoading ? (
             <LoadingSpinner text="뉴스 불러오는 중..." />
@@ -452,23 +460,10 @@ export default function QuizPage() {
               )}
             </>
           )}
-
-          <div className="quiz-card__tips">
-            <strong>Tips</strong>
-            <span>끝까지 읽으면 다음 단계로 넘어갈 수 있어요</span>
-          </div>
         </section>
       </div>
 
       <div className="quiz-footer">
-        <div className="quiz-dots">
-          <span className="quiz-dot" />
-          <span className="quiz-dot quiz-dot--active" />
-          <span className="quiz-dot" />
-        </div>
-
-        <p className="quiz-footer__text">끝까지 읽으면 다음 단계로 넘어갈 수 있어요</p>
-
         <button
           type="button"
           className="quiz-next-button"
@@ -483,13 +478,12 @@ export default function QuizPage() {
 
   const renderStep3 = () => (
     <>
-      <div className="quiz-card-stack" aria-label="퀴즈 카드 스택">
+      <div className="quiz-card-stack quiz-card-stack--step-3" aria-label="퀴즈 카드 스택">
         <div className="quiz-card-stack__back-layer" />
         <div className="quiz-card-stack__front-layer" />
 
         <section className="quiz-card quiz-card--main">
           <div className="quiz-card__badge">3</div>
-          <p className="quiz-card__section-label">문제 풀이</p>
 
           {questionLoading ? (
             <LoadingSpinner text="문제 불러오는 중..." />
@@ -514,19 +508,23 @@ export default function QuizPage() {
 
       <section className="quiz-answer-section" aria-label="OX 퀴즈 선택">
         <div className="quiz-actions">
-          {questionChoices.map((choice) => (
-            <button
-              key={choice.choiceId}
-              type="button"
-              className={`quiz-answer-button ${
-                selectedChoiceId === choice.choiceId ? getChoiceClass(choice.choiceId) : ''
-              }`}
-              onClick={() => !resultData && handleSubmit(choice.choiceId)}
-              disabled={!!resultData || submitting || questionLoading}
-            >
-              {choice.label}
-            </button>
-          ))}
+          {questionChoices.map((choice) => {
+            const isSelected = isSameChoiceId(selectedChoiceId, choice.choiceId);
+
+            return (
+              <button
+                key={choice.choiceId}
+                type="button"
+                className={`quiz-answer-button ${
+                  isSelected ? getChoiceClass(choice.choiceId) : ''
+                }`}
+                onClick={() => !resultData && handleSubmit(choice.choiceId)}
+                disabled={!!resultData || submitting || questionLoading}
+              >
+                {choice.label}
+              </button>
+            );
+          })}
         </div>
 
         {resultData && (

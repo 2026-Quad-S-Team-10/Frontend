@@ -10,8 +10,6 @@ import {
   updateSpeechBubble,
 } from '../api/character.js';
 
-import { getGrade } from '../api/learning.js';
-
 import normalExpression from '../assets/character/expressions/기본표정.png';
 import embarrassedExpression from '../assets/character/expressions/당황표정.png';
 import excitedExpression from '../assets/character/expressions/신남표정.png';
@@ -57,8 +55,9 @@ const backgroundImageMap = {
   bg10days: bg10Days,
 };
 
-const LEVELS = ['초급', '중급', '고급', '졸업'];
-const LEVEL_REQUIREMENTS = [5, 8, 10, 0];
+const DISPLAY_QUIZ_COUNT = 1;
+const DISPLAY_REQUIRED_QUIZ_COUNT = 7;
+const DISPLAY_REMAINING_QUIZ = 6;
 
 const TAB_CONFIG = {
   expression: {
@@ -148,11 +147,22 @@ function resolveExpressionKey(value) {
     return 'normal';
   }
 
-  if (lower.includes('embarrassed') || lower.includes('panic') || key.includes('당황') || key.includes('열정') || key.includes('정열')) {
+  if (
+    lower.includes('embarrassed') ||
+    lower.includes('panic') ||
+    key.includes('당황') ||
+    key.includes('열정') ||
+    key.includes('정열')
+  ) {
     return 'embarrassed';
   }
 
-  if (lower.includes('excited') || lower.includes('happy') || key.includes('신남') || key.includes('설렘')) {
+  if (
+    lower.includes('excited') ||
+    lower.includes('happy') ||
+    key.includes('신남') ||
+    key.includes('설렘')
+  ) {
     return 'excited';
   }
 
@@ -160,7 +170,12 @@ function resolveExpressionKey(value) {
     return 'smirk';
   }
 
-  if (lower.includes('teary') || lower.includes('sad') || key.includes('울먹') || key.includes('먹먹')) {
+  if (
+    lower.includes('teary') ||
+    lower.includes('sad') ||
+    key.includes('울먹') ||
+    key.includes('먹먹')
+  ) {
     return 'teary';
   }
 
@@ -186,9 +201,18 @@ function resolveOutfitKey(value) {
   if (lower.includes('guitar') || key.includes('기타')) return 'guitarist';
   if (lower.includes('rain') || key.includes('비옷')) return 'raincoat';
   if (lower.includes('santa') || key.includes('산타')) return 'santa';
-  if (lower.includes('study') || lower.includes('facemode') || key.includes('열공') || key.includes('공부')) return 'faceMode';
+  if (
+    lower.includes('study') ||
+    lower.includes('facemode') ||
+    key.includes('열공') ||
+    key.includes('공부')
+  ) {
+    return 'faceMode';
+  }
   if (lower.includes('king') || key.includes('왕') || key.includes('킹')) return 'king';
-  if (lower.includes('baker') || key.includes('제빵') || key === '빵' || key.includes('빵집')) return 'baker';
+  if (lower.includes('baker') || key.includes('제빵') || key === '빵' || key.includes('빵집')) {
+    return 'baker';
+  }
 
   return key;
 }
@@ -274,16 +298,8 @@ function normalizeItem(rawItem, tabKey) {
   return {
     id: rawId ?? assetKey,
     assetKey,
-    label:
-      rawItem?.name ??
-      rawItem?.itemName ??
-      rawItem?.label ??
-      assetKey,
-    imageUrl:
-      rawItem?.imageUrl ??
-      rawItem?.assetUrl ??
-      rawItem?.assetPath ??
-      null,
+    label: rawItem?.name ?? rawItem?.itemName ?? rawItem?.label ?? assetKey,
+    imageUrl: rawItem?.imageUrl ?? rawItem?.assetUrl ?? rawItem?.assetPath ?? null,
     acquired:
       rawItem?.isOwned ??
       rawItem?.owned ??
@@ -338,21 +354,6 @@ function normalizeItems(data, tabKey) {
   return [...normalizedItems, ...fallbackBackgrounds];
 }
 
-function getGradeLabel(value) {
-  if (typeof value === 'number') {
-    return LEVELS[value - 1] ?? `${value}등급`;
-  }
-
-  return value ?? '초급';
-}
-
-function getGradeIndex(value) {
-  if (typeof value === 'number') return Math.max(value - 1, 0);
-
-  const index = LEVELS.indexOf(value);
-  return index >= 0 ? index : 0;
-}
-
 const CharacterPage = () => {
   const navigate = useNavigate();
 
@@ -363,8 +364,6 @@ const CharacterPage = () => {
   const [selectedOutfit, setSelectedOutfit] = useState(null);
   const [selectedBackground, setSelectedBackground] = useState('default');
 
-  const [customizationData, setCustomizationData] = useState(null);
-  const [gradeData, setGradeData] = useState(null);
   const [itemsByTab, setItemsByTab] = useState({
     expression: TAB_CONFIG.expression.fallbackItems,
     outfit: TAB_CONFIG.outfit.fallbackItems,
@@ -374,59 +373,58 @@ const CharacterPage = () => {
   const [loading, setLoading] = useState(true);
   const [itemsLoading, setItemsLoading] = useState(false);
 
+  const progressPercent =
+    DISPLAY_REQUIRED_QUIZ_COUNT > 0
+      ? Math.min((DISPLAY_QUIZ_COUNT / DISPLAY_REQUIRED_QUIZ_COUNT) * 100, 100)
+      : 100;
+
   useEffect(() => {
     let cancelled = false;
 
-    Promise.allSettled([getCharacterCustomization(), getGrade()])
-      .then(([customRes, gradeRes]) => {
+    getCharacterCustomization()
+      .then((data) => {
         if (cancelled) return;
 
-        if (customRes.status === 'fulfilled') {
-          const data = customRes.value;
-          setCustomizationData(data);
+        setCharacterMessage(
+          data?.speechBubbleMessage ??
+            data?.speechBubbleText ??
+            data?.message ??
+            '작심삼일을 3일마다 하자...',
+        );
 
-          setCharacterMessage(
-            data?.speechBubbleMessage ??
-              data?.speechBubbleText ??
-              data?.message ??
-              '작심삼일을 3일마다 하자...',
-          );
+        setSelectedExpression(
+          resolveAssetKey(
+            'expression',
+            data?.equippedCharacterAssetKey ??
+              data?.equippedFaceAssetKey ??
+              data?.selectedExpression ??
+              data?.characterAssetKey ??
+              'normal',
+          ),
+        );
 
-          setSelectedExpression(
-            resolveAssetKey(
-              'expression',
-              data?.equippedCharacterAssetKey ??
-                data?.equippedFaceAssetKey ??
-                data?.selectedExpression ??
-                data?.characterAssetKey ??
-                'normal',
-            ),
-          );
+        setSelectedOutfit(
+          resolveAssetKey(
+            'outfit',
+            data?.equippedOutfitAssetKey ??
+              data?.selectedOutfit ??
+              data?.outfitAssetKey ??
+              null,
+          ),
+        );
 
-          setSelectedOutfit(
-            resolveAssetKey(
-              'outfit',
-              data?.equippedOutfitAssetKey ??
-                data?.selectedOutfit ??
-                data?.outfitAssetKey ??
-                null,
-            ),
-          );
-
-          setSelectedBackground(
-            resolveAssetKey(
-              'background',
-              data?.equippedBackgroundAssetKey ??
-                data?.selectedBackground ??
-                data?.backgroundAssetKey ??
-                'default',
-            ),
-          );
-        }
-
-        if (gradeRes.status === 'fulfilled') {
-          setGradeData(gradeRes.value);
-        }
+        setSelectedBackground(
+          resolveAssetKey(
+            'background',
+            data?.equippedBackgroundAssetKey ??
+              data?.selectedBackground ??
+              data?.backgroundAssetKey ??
+              'default',
+          ),
+        );
+      })
+      .catch(() => {
+        // 캐릭터 정보를 불러오지 못해도 기본 캐릭터로 화면을 유지
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -478,39 +476,6 @@ const CharacterPage = () => {
       cancelled = true;
     };
   }, [activeTab]);
-
-  const levelValue =
-    gradeData?.currentGrade ??
-    gradeData?.grade ??
-    customizationData?.currentGrade ??
-    1;
-
-  const levelIndex = getGradeIndex(levelValue);
-  const currentLevel = getGradeLabel(levelValue);
-
-  const quizCount =
-    gradeData?.correctQuizCount ??
-    gradeData?.currentCorrectCount ??
-    gradeData?.solvedQuizCount ??
-    customizationData?.correctQuizCount ??
-    0;
-
-  const requiredQuizCount =
-    gradeData?.requiredCorrectCount ??
-    gradeData?.requiredQuizCount ??
-    customizationData?.requiredCorrectCount ??
-    LEVEL_REQUIREMENTS[levelIndex] ??
-    10;
-
-  const remainingQuiz =
-    gradeData?.remainingQuizCount ??
-    gradeData?.remainingCorrectCount ??
-    Math.max(requiredQuizCount - quizCount, 0);
-
-  const progressPercent =
-    requiredQuizCount > 0
-      ? Math.min((quizCount / requiredQuizCount) * 100, 100)
-      : 100;
 
   const activeItems = useMemo(() => {
     return itemsByTab[activeTab] ?? TAB_CONFIG[activeTab].fallbackItems;
@@ -590,14 +555,10 @@ const CharacterPage = () => {
     }
 
     try {
-      const response = await equipItem({
+      await equipItem({
         tabType: TAB_CONFIG[activeTab].apiType,
         itemId: item.id,
       });
-
-      if (response) {
-        setCustomizationData(response);
-      }
     } catch {
       setSelectedByTab(activeTab, previousValue);
       alert('아이템 장착에 실패했습니다.');
@@ -673,11 +634,6 @@ const CharacterPage = () => {
 
         <section className="character-progress">
           <div className="character-progress-bar">
-            <div className="character-level-pill">
-              <span>{currentLevel}</span>
-              <span className="character-level-dot" />
-            </div>
-
             <div className="character-progress-track">
               <div
                 className="character-progress-fill"
@@ -686,7 +642,7 @@ const CharacterPage = () => {
             </div>
 
             <div className="character-progress-count">
-              {quizCount}/{requiredQuizCount}
+              {DISPLAY_QUIZ_COUNT}/{DISPLAY_REQUIRED_QUIZ_COUNT}
             </div>
 
             <div className="character-help">?</div>
@@ -695,7 +651,7 @@ const CharacterPage = () => {
 
         <section className="character-reward-card">
           <h2>
-            퀴즈 <strong>{remainingQuiz}</strong>번만 더 풀면?
+            퀴즈 <strong>{DISPLAY_REMAINING_QUIZ}</strong>번만 더 풀면?
           </h2>
 
           <div className="character-reward-divider" />

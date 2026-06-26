@@ -1,7 +1,7 @@
 .auth-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100%;
   background-color: var(--white, #FFFFFF);
   padding: 24px;
 }
@@ -30,13 +30,13 @@
   flex: 1;
 }
 
-.input-group {
+.auth-page .input-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.input-label {
+.auth-page .input-label {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-dark, #111827);
